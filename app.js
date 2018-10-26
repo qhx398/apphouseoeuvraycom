@@ -17,6 +17,10 @@ app.get('/', function(req, res) {
     res.render('index');
 });
 
+app.post('/', function(req, res) {
+    res.send('YOU HAVE REACHED THE POST ROUTE!');
+});
+
 //KEEP UNDEFINED ROUTE AT THE BOTTOM TO NOT INTEFERE WITH VALID ROUTES!
 app.get('*', function(req, res) {
    res.send('NOTHING TO SEE HERE :)'); 

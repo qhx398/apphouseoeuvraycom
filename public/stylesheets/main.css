@@ -1,5 +1,36 @@
-h4 {
-    color: orange;
+/* STANDARD SETTINGS FOR ALL PAGES */
+p, h1, h2, h3, h4 { 
     font-family: 'Hammersmith One', sans-serif;
-    font-size: 30px;
+    font-size: 25px;
+}
+
+input, button {
+    font-family: 'Hammersmith One', sans-serif;
+    font-size: 15px;
+}
+
+form {
+    margin: 0 auto;
+    padding: 1%;
+}
+
+body {
+    margin: 0 auto;
+}
+
+.container {
+    margin: 0 auto;
+}
+
+/* INDEX */
+
+.indexLoginForm {
+    border: 3px solid black;
+    position: absolute;
+    top: 40%;
+    left: 19%;
+    width: 60%;
+    background: #c0c6be;
+    border-radius: 15px;
+    text-align: center;
 }
