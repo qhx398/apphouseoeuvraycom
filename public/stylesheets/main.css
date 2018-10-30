@@ -5,6 +5,13 @@ p, h1, h2, h3, h4 {
 }
 
 input, button {
+    font-family: 'Hammersmith One', sans-serif !important;
+    font-size: 15px;
+    
+    
+}
+
+table {
     font-family: 'Hammersmith One', sans-serif;
     font-size: 15px;
 }
@@ -13,6 +20,8 @@ form {
     margin: 0 auto;
     padding: 1%;
 }
+
+
 
 body {
     margin: 0 auto;

@@ -1,0 +1,22 @@
+<% include partials/header %>
+
+    <div class="container">
+<h1>ACCESS LOGS PAGE!</h1>
+<% for(var i=0; i < query.length; i++) { %>
+
+<table>
+    <tr>
+        <th>Date:</th>
+        <th>Username:</th>
+        <th>From IP:</th>
+    </tr>
+    <tr>
+        <td><%= query[i].accessedOn %></td>
+        <td><%= query[i].Username %></td>
+        <td><%= query[i].IP %></td>
+    </tr>
+</table>
+
+<% } %>
+    </div>
+<% include partials/footer %>
