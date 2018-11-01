@@ -43,3 +43,15 @@ body {
     border-radius: 15px;
     text-align: center;
 }
+
+/* ACCESS DENIED PAGE */
+
+.accessDeniedText {
+    position: absolute;
+    border: 5px solid black;
+    background: grey;
+    width: 80%;
+    left: 9.25%;
+    top: 42%;
+    text-align: center;
+}

@@ -5,9 +5,12 @@ var express          = require('express'),
     bodyParser       = require('body-parser'),
     accesslogModel   = require('./models/accesslog.js');
     
+    
 
 
 //SETUP
+
+//SET THE VIEW ENGINE TO EJS
 app.set('view engine', 'ejs');
 
 //ALLOW EJS TEMPLATE TO USE PUBLIC FOLDER
@@ -22,7 +25,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 //CONNECT TO MONGO
 mongoose.connect('mongodb://localhost:27017/nodeapp', {useNewUrlParser: true });
 
-//MIDDLEWARE
+//MIDDLEWARES 
 
 function isRightIP(req, res, next) {
 
@@ -45,20 +48,24 @@ function isRightIP(req, res, next) {
 
     if (IPIsAllowed == false) {
         console.log('ACCESS DENIED TO IP: ' + req.ip + ' ON ROUTE: ' + req.url);
-        res.redirect('https://www.google.com');
+        res.render('accessdenied');
     } else {
         console.log('ACCESS GRANTED TO IP: ' + req.ip + ' ON ROUTE: ' + req.url);
         next();
     }
+    
 }
+
+//APPLY ISRIGHTIP MIDDLWARE TO ALL ROUTES
+app.use('/', isRightIP);
 
 
 //ROUTES
-app.get('/', isRightIP, function(req, res) {
+app.get('/', function(req, res) {
     res.render('index');
 });
 
-app.post('/', isRightIP, function(req, res) {
+app.post('/', function(req, res) {
     var accesslogdata = new accesslogModel({
         IP: req.ip,
         Username: req.body.username
@@ -74,7 +81,7 @@ app.post('/', isRightIP, function(req, res) {
 
 });
 
-app.get('/accesslogs', isRightIP, function(req, res) {
+app.get('/accesslogs', function(req, res) {
     accesslogModel.find({}, function(err, query) {
         if(err) {
             console.log(err);
