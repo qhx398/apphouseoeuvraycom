@@ -25,22 +25,25 @@ mongoose.connect('mongodb://localhost:27017/nodeapp', {useNewUrlParser: true });
 //MIDDLEWARE
 
 function isRightIP(req, res, next) {
-    
-    var allowedIP = ['142.179.122.11', '142.179.122.11', '142.179.122.1', '142.179.122.12', '142.179.122.32', '142.179.122.15'];
+
+    //HARD DEFINITIVE LIST
+    var allowedIP = ['142.179.122.12', '142.179.122.11', '142.179.122.1', '142.179.122.100', '142.179.122.32', '142.179.122.15'];
     var IPIsAllowed = false;
+    //MATCHING REGEX FOR LAN USAGE SO ALL IPS ARE NOT HARD CODED
+    var regex = /192\.168\.1\.\d{1,3}/;
 
     for (var i = 0; i < allowedIP.length; i++) {
-        if (req.ip == allowedIP[i]) {
+        if (req.ip == allowedIP[i] || req.ip.match(regex)) {
             IPIsAllowed = true;
             console.log('true');
             break;
-        } else if(req.ip !== allowedIP[i]) {
+        } else if (req.ip !== allowedIP[i]) {
             IPIsAllowed = false;
             console.log('false');
         }
     }
-    
-    if(IPIsAllowed == false) {
+
+    if (IPIsAllowed == false) {
         console.log('ACCESS DENIED TO IP: ' + req.ip + ' ON ROUTE: ' + req.url);
         res.redirect('https://www.google.com');
     } else {
