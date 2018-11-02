@@ -1,11 +1,17 @@
 //DEPENDANCIES
-var express          = require('express'),
-    app              = express(),
-    mongoose         = require('mongoose'),
-    bodyParser       = require('body-parser'),
-    accesslogModel   = require('./models/accesslog.js');
-    
-    
+var express = require('express'),
+    app = express(),
+    passport = require('passport'),
+    flash = require('connect-flash'),
+    localStrategy = require('passport-local').Strategy,
+    cookieParser = require('cookie-parser'),
+    session = require('express-session'),
+    mongoose = require('mongoose'),
+    bodyParser = require('body-parser'),
+    accesslogModel = require('./models/accesslog.js'),
+    userModel = require('./models/user.js');
+
+
 
 
 //SETUP
@@ -20,10 +26,14 @@ app.use(express.static(__dirname + '/public'));
 app.enable('trust proxy');
 
 //USE BODYPARSER TO GRAB FORM DATA
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 //CONNECT TO MONGO
-mongoose.connect('mongodb://localhost:27017/nodeapp', {useNewUrlParser: true });
+mongoose.connect('mongodb://localhost:27017/nodeapp', {
+    useNewUrlParser: true
+});
 
 //MIDDLEWARES 
 
@@ -53,11 +63,28 @@ function isRightIP(req, res, next) {
         console.log('ACCESS GRANTED TO IP: ' + req.ip + ' ON ROUTE: ' + req.url);
         next();
     }
-    
+
 }
 
 //APPLY ISRIGHTIP MIDDLWARE TO ALL ROUTES
 app.use('/', isRightIP);
+
+//PASSPORT MIDDLEWARE SETUP
+
+app.use(session({
+    secret: 'vJ46Zs5KJNQH4vDjMDe6WKaZFhcba7A3Sp533HeG9Tw68stUv8ayEPCWh8UXQy9MVHATuRkMQQhDK59e',
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(cookieParser());
+app.use(flash());
+
+passport.use(new localStrategy(userModel.authenticate()));
+passport.serializeUser(userModel.serializeUser());
+passport.deserializeUser(userModel.deserializeUser());
+
 
 
 //ROUTES
@@ -65,36 +92,68 @@ app.get('/', function(req, res) {
     res.render('index');
 });
 
-app.post('/', function(req, res) {
+app.post('/', passport.authenticate('local', {
+    successRedirect: '/success',
+    failureRedirect: '/failure'
+}), function(req, res) {
+
     var accesslogdata = new accesslogModel({
         IP: req.ip,
         Username: req.body.username
     });
-    
+
     accesslogdata.save(function(err) {
-        if(err) {
+        if (err) {
             console.log(err);
         } else {
+
             res.send('YOU HAVE REACHED THE POST ROUTE! AND THE RECORD IS SAVED!');
         }
     });
+
 
 });
 
 app.get('/accesslogs', function(req, res) {
     accesslogModel.find({}, function(err, query) {
-        if(err) {
+        if (err) {
             console.log(err);
         } else {
-            res.render('accesslogs', {query: query});
+            res.render('accesslogs', {
+                query: query
+            });
         }
     });
 });
 
+app.get('/register', function(req, res) {
+    res.render('register');
+});
+
+app.post('/register', function(req, res) {
+    var newUser = new userModel({
+        username: req.body.username
+    });
+
+    userModel.register(newUser, req.body.password, function(err, user) {
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        }
+        passport.authenticate("local")(req, res, function() {
+            res.redirect("/");
+        });
+    });
+});
+
+app.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
+});
 
 //KEEP UNDEFINED ROUTE AT THE BOTTOM TO NOT INTEFERE WITH VALID ROUTES!
 app.get('*', function(req, res) {
-   res.send('NOTHING TO SEE HERE :)'); 
+    res.send('NOTHING TO SEE HERE :)');
 });
 
 
@@ -106,4 +165,3 @@ if (process.env.PORT == '8080') {
 } else {
     app.listen('5004', console.log('NODEAPP IS LISTENING ON PORT 5004!'));
 }
-
