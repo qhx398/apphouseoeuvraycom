@@ -1,15 +1,15 @@
 //DEPENDANCIES
-var express = require('express'),
-    app = express(),
-    passport = require('passport'),
-    flash = require('connect-flash'),
-    localStrategy = require('passport-local').Strategy,
-    cookieParser = require('cookie-parser'),
-    session = require('express-session'),
-    mongoose = require('mongoose'),
-    bodyParser = require('body-parser'),
-    accesslogModel = require('./models/accesslog.js'),
-    userModel = require('./models/user.js');
+var express             = require('express'),
+    app                 = express(),
+    passport            = require('passport'),
+    flash               = require('connect-flash'),
+    localStrategy       = require('passport-local').Strategy,
+    cookieParser        = require('cookie-parser'),
+    session             = require('express-session'),
+    mongoose            = require('mongoose'),
+    bodyParser          = require('body-parser'),
+    accesslogModel      = require('./models/accesslog.js'),
+    userModel           = require('./models/user.js');
 
 
 
@@ -92,26 +92,19 @@ app.get('/', function(req, res) {
     res.render('index');
 });
 
-app.post('/', passport.authenticate('local', {
-    successRedirect: '/success',
-    failureRedirect: '/failure'
-}), function(req, res) {
-
+app.post('/', passport.authenticate('local', { failureRedirect: '/failure' }), function(req, res) {
     var accesslogdata = new accesslogModel({
         IP: req.ip,
-        Username: req.body.username
+        username: req.body.username
     });
-
     accesslogdata.save(function(err) {
-        if (err) {
+        if(err) {
             console.log(err);
         } else {
-
-            res.send('YOU HAVE REACHED THE POST ROUTE! AND THE RECORD IS SAVED!');
+            console.log('YOU HAVE REACHED THE POST ROUTE! AND THE RECORD IS SAVED!');
+            res.redirect('/success');
         }
     });
-
-
 });
 
 app.get('/accesslogs', function(req, res) {
@@ -140,8 +133,8 @@ app.post('/register', function(req, res) {
             console.log(err);
             return res.send(err);
         }
-        passport.authenticate("local")(req, res, function() {
-            res.redirect("/");
+        passport.authenticate('local')(req, res, function() {
+            res.redirect('/');
         });
     });
 });
